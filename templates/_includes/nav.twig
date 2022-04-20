@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Eleventh navbar example">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/"><img class="img-fluid" width="42" src="/images/simg/logo.svg" alt="Logo"></a>
+    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse" id="navbarsExample09" style="">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if currentUser %}
+        {% if currentUser.admin %}
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url('admin') }}">Admin</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url('account') }}">Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url('profile') }}">Edit Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url('reset-password') }}">Reset Password</a>
+        </li>
+        {# <li class="nav-item">
+        <a class="nav-link active" href="{{ url('new-password') }}">Set Password</a>
+        </li> #}
+        <li class="nav-item">
+        <a class="nav-link active" href="{{ url('logout') }}">Logout</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

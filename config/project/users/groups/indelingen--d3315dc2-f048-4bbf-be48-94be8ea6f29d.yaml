@@ -1,0 +1,15 @@
+description: ''
+handle: indelingen
+name: indelingen
+permissions:
+  - 'createentries:32efab90-8c84-4627-bc29-0cafb97a65bc' # blogpost
+  - 'publishentries:32efab90-8c84-4627-bc29-0cafb97a65bc' # blogpost
+  - 'deleteentries:32efab90-8c84-4627-bc29-0cafb97a65bc' # blogpost
+  - 'editentries:32efab90-8c84-4627-bc29-0cafb97a65bc' # blogpost
+  - 'createentries:84a11e7d-9e21-46f9-8b24-7290df208456' # users
+  - 'publishentries:84a11e7d-9e21-46f9-8b24-7290df208456' # users
+  - 'deleteentries:84a11e7d-9e21-46f9-8b24-7290df208456' # users
+  - 'editentries:84a11e7d-9e21-46f9-8b24-7290df208456' # users
+  - 'saveassetinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9' # images
+  - 'replacefilesinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9' # images
+  - 'viewvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9' # images

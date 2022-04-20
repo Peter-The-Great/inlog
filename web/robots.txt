@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /js
+Disallow: /css
+Disallow: /webfonts
+Disallow: /cpresources
+
+Sitemap: http://blogsite.local/

@@ -1,0 +1,15 @@
+columnSuffix: dpxzvzre
+contentColumnType: mediumtext
+fieldGroup: acdcf546-192b-4c80-8385-2b814525e484 # blogpost
+handle: text
+instructions: ''
+name: text
+searchable: false
+settings:
+  columnType: mediumtext
+  initJs: null
+  purifierConfig: ''
+  purifyHtml: '1'
+translationKeyFormat: null
+translationMethod: none
+type: craft\ckeditor\Field

@@ -1,0 +1,15 @@
+columnSuffix: judhyjmq
+contentColumnType: string(255)
+fieldGroup: acdcf546-192b-4c80-8385-2b814525e484 # blogpost
+handle: video
+instructions: ''
+name: video
+searchable: false
+settings:
+  maxLength: '255'
+  placeholder: null
+  types:
+    - url
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Url

@@ -1,0 +1,6 @@
+siteUid: null
+sortOrder: 4
+template: /users/account/reset-password
+uriParts:
+  - reset-password
+uriPattern: reset-password

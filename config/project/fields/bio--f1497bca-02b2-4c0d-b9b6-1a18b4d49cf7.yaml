@@ -1,0 +1,15 @@
+columnSuffix: ppdudzrb
+contentColumnType: mediumtext
+fieldGroup: c8db6649-4212-42fa-9616-5358a9574856 # user
+handle: bio
+instructions: ''
+name: bio
+searchable: false
+settings:
+  columnType: mediumtext
+  initJs: null
+  purifierConfig: ''
+  purifyHtml: '1'
+translationKeyFormat: null
+translationMethod: none
+type: craft\ckeditor\Field

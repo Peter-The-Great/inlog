@@ -1,0 +1,6 @@
+siteUid: null
+sortOrder: 5
+template: /users/account/setpassword
+uriParts:
+  - new-password
+uriPattern: new-password

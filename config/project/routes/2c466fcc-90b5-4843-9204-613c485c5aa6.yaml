@@ -1,0 +1,6 @@
+siteUid: null
+sortOrder: 3
+template: /users/account/register
+uriParts:
+  - register
+uriPattern: register

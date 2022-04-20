@@ -1,0 +1,26 @@
+{
+  "name": "inlog",
+  "version": "1.0.0",
+  "description": "Een inlogsysteem.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Peter-The-Great/inlog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Peter-The-Great/inlog/issues"
+  },
+  "homepage": "https://github.com/Peter-The-Great/inlog#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "bootstrap": "^5.1.2"
+  }
+}

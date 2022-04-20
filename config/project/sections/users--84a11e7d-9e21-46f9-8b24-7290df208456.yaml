@@ -1,0 +1,24 @@
+defaultPlacement: end
+enableVersioning: true
+handle: users
+name: users
+previewTargets:
+  -
+    __assoc__:
+      -
+        - label
+        - 'Primaire invoer-pagina'
+      -
+        - urlFormat
+        - '{url}'
+      -
+        - refresh
+        - '1'
+propagationMethod: all
+siteSettings:
+  341c12ec-dfad-49a9-a1d0-8a10df36b6df: # Inlog
+    enabledByDefault: true
+    hasUrls: true
+    template: users/_entry
+    uriFormat: 'users/{slug}'
+type: channel

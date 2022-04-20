@@ -1,0 +1,10 @@
+{% extends '_layouts/main' %}
+{% block main %}
+{% if currentUser == null  %}
+<div class="container text-center my-auto">
+    <h1 class="h1">Welkom bij het Systeem login of registreer</h1>
+    <a href="{{ url('login') }}"><button class="btn btn-lg btn-primary" type="button" name="button1">Login</button></a>
+    <a href="{{ url('register') }}"><button class="btn btn-lg btn-primary" type="button" name="button2">Register</button></a>
+</div>
+{% endif %}
+{% endblock %}

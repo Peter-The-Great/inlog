@@ -1,0 +1,56 @@
+dateModified: 1632390375
+email:
+  fromEmail: pjotr@pixeldeluxe.nl
+  fromName: Inlog
+  transportType: craft\mail\transportadapters\Sendmail
+meta:
+  __names__:
+    7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9: images # images
+    7e891c5b-79d1-49c9-988f-150aaa748c4d: 'Public Schema' # Public Schema
+    32efab90-8c84-4627-bc29-0cafb97a65bc: blogpost # blogpost
+    57ad1d88-5e68-4049-ad0d-5b79454b07d1: Standaard # Standaard
+    77c06f40-3897-4d03-9b55-f5429485c835: Inlog # Inlog
+    84a11e7d-9e21-46f9-8b24-7290df208456: users # users
+    341c12ec-dfad-49a9-a1d0-8a10df36b6df: Inlog # Inlog
+    04302099-b1f0-4a25-8180-b8936ac35b7d: text # text
+    8162203a-8882-4748-9e2a-642a0b8870df: Standaard # Standaard
+    acdcf546-192b-4c80-8385-2b814525e484: blogpost # blogpost
+    c3f14eba-924f-40e8-bd6f-75ee2f3e46a2: Common # Common
+    c8db6649-4212-42fa-9616-5358a9574856: user # user
+    c8554b26-1fbb-4154-8f31-8ea9da472549: video # video
+    d3315dc2-f048-4bbf-be48-94be8ea6f29d: indelingen # indelingen
+    f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7: bio # bio
+plugins:
+  ckeditor:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  contact-form:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+    settings:
+      allowAttachments: ''
+      prependSender: Namens
+      prependSubject: 'New message from Inlog'
+      successFlashMessage: 'Jouw bericht is verstuurd.'
+      toEmail: pjotr@pixeldeluxe.nl
+  cp-css:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.0.0
+  redactor:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.3.0
+  seo:
+    edition: standard
+    enabled: true
+    schemaVersion: 3.2.0
+system:
+  edition: pro
+  live: true
+  name: Inlog
+  retryDuration: null
+  schemaVersion: 3.7.8
+  timeZone: Europe/Amsterdam

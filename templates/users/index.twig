@@ -1,0 +1,32 @@
+{% requireLogin %}
+{% extends '_layouts/main' %}
+{% block main %}
+    {% set nugebruiker = craft.app.user.rememberedUsername %}
+    {% set gebruiker = craft.users().username(nugebruiker|literal).one() %}
+    <table class='table table-dark table-bordered table-hover'>
+    <tr scope="col">
+        <th>Gebruikersnaam</th>
+        {% if gebruiker.firstName %}
+        <th>Voornaam</th>
+        <th>Achternaam</th>
+        {% endif %}
+        <th>Email</th>
+        {% if gebruiker.photo %}
+        <th>Profile</th>
+        {% endif %}
+    </tr>
+    <tr scope="row">
+        <td>{{ gebruiker.username }}</td>
+        {% if gebruiker.firstName %}
+        <td>{{ gebruiker.firstName }}</td>
+        <td>{{ gebruiker.lastName }}</td>
+        {% endif %}
+        <td>{{ gebruiker.email }}</td>
+        {% if gebruiker.photo %}
+        <td>{{ gebruiker.photo.getImg({width: 150, height: 150})|attr({
+          id: 'photo',
+          alt: gebruiker.firstName,}) }}</td>
+        {% endif %}
+    </tr>
+    </table>
+{% endblock %}

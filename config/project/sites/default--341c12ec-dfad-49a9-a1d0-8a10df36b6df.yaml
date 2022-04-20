@@ -1,0 +1,8 @@
+baseUrl: $PRIMARY_SITE_URL
+handle: default
+hasUrls: true
+language: nl
+name: Inlog
+primary: true
+siteGroup: 77c06f40-3897-4d03-9b55-f5429485c835 # Inlog
+sortOrder: 1
