@@ -3,6 +3,4 @@
 /vendor
 .DS_Store
 node_modules/
-templates/about/
 package-lock.json
-/inlog.sql
