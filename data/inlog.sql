@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 18 mei 2022 om 22:44
--- Serverversie: 10.4.21-MariaDB
--- PHP-versie: 7.4.21
+-- Gegenereerd op: 19 okt 2022 om 21:38
+-- Serverversie: 10.4.25-MariaDB
+-- PHP-versie: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `inlog`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `addresses`
+--
+
+CREATE TABLE `addresses` (
+  `id` int(11) NOT NULL,
+  `ownerId` int(11) DEFAULT NULL,
+  `countryCode` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `administrativeArea` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locality` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dependentLocality` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `postalCode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sortingCode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `addressLine1` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `addressLine2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organization` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationTaxId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `latitude` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `longitude` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dateCreated` datetime NOT NULL,
+  `dateUpdated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -46,14 +74,35 @@ CREATE TABLE `announcements` (
 
 CREATE TABLE `assetindexdata` (
   `id` int(11) NOT NULL,
-  `sessionId` varchar(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `sessionId` int(11) NOT NULL,
   `volumeId` int(11) NOT NULL,
   `uri` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `size` bigint(20) UNSIGNED DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
+  `isDir` tinyint(1) DEFAULT 0,
   `recordId` int(11) DEFAULT NULL,
+  `isSkipped` tinyint(1) DEFAULT 0,
   `inProgress` tinyint(1) DEFAULT 0,
   `completed` tinyint(1) DEFAULT 0,
+  `dateCreated` datetime NOT NULL,
+  `dateUpdated` datetime NOT NULL,
+  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `assetindexingsessions`
+--
+
+CREATE TABLE `assetindexingsessions` (
+  `id` int(11) NOT NULL,
+  `indexedVolumes` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `totalEntries` int(11) DEFAULT NULL,
+  `processedEntries` int(11) NOT NULL DEFAULT 0,
+  `cacheRemoteImages` tinyint(1) DEFAULT NULL,
+  `isCli` tinyint(1) DEFAULT 0,
+  `actionRequired` tinyint(1) DEFAULT 0,
   `dateCreated` datetime NOT NULL,
   `dateUpdated` datetime NOT NULL,
   `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
@@ -72,6 +121,7 @@ CREATE TABLE `assets` (
   `uploaderId` int(11) DEFAULT NULL,
   `filename` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `kind` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'unknown',
+  `alt` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `width` int(11) UNSIGNED DEFAULT NULL,
   `height` int(11) UNSIGNED DEFAULT NULL,
   `size` bigint(20) UNSIGNED DEFAULT NULL,
@@ -80,73 +130,16 @@ CREATE TABLE `assets` (
   `keptFile` tinyint(1) DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+  `dateUpdated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Gegevens worden geëxporteerd voor tabel `assets`
 --
 
-INSERT INTO `assets` (`id`, `volumeId`, `folderId`, `uploaderId`, `filename`, `kind`, `width`, `height`, `size`, `focalPoint`, `deletedWithVolume`, `keptFile`, `dateModified`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(9, 1, 4, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', 'image', 611, 765, 595597, NULL, NULL, NULL, '2021-09-21 10:13:42', '2021-09-21 10:13:42', '2021-09-21 10:13:42', 'e3a9fcaf-2795-4209-bd57-40d511ea5d8b'),
-(12, 1, 4, 1, 'xp.jpeg', 'image', 3840, 2160, 708738, NULL, NULL, NULL, '2021-09-21 14:16:20', '2021-09-21 13:23:20', '2021-09-21 14:16:20', '55ad1fda-4c50-41cc-9bbe-a0495bff651e');
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `assettransformindex`
---
-
-CREATE TABLE `assettransformindex` (
-  `id` int(11) NOT NULL,
-  `assetId` int(11) NOT NULL,
-  `filename` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `format` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `volumeId` int(11) DEFAULT NULL,
-  `fileExists` tinyint(1) NOT NULL DEFAULT 0,
-  `inProgress` tinyint(1) NOT NULL DEFAULT 0,
-  `error` tinyint(1) NOT NULL DEFAULT 0,
-  `dateIndexed` datetime DEFAULT NULL,
-  `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Gegevens worden geëxporteerd voor tabel `assettransformindex`
---
-
-INSERT INTO `assettransformindex` (`id`, `assetId`, `filename`, `format`, `location`, `volumeId`, `fileExists`, `inProgress`, `error`, `dateIndexed`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 9, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_150x150_crop_center-center_none', 1, 1, 0, 0, '2021-09-21 10:13:44', '2021-09-21 10:13:44', '2021-09-21 10:13:44', 'ec31a262-696f-4d3a-aa2c-3f56b9c58f8c'),
-(2, 9, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_100x150_crop_center-center_none', 1, 1, 0, 0, '2021-09-21 12:20:37', '2021-09-21 12:20:37', '2021-09-21 12:20:38', '0a2bb2cd-2ab9-4511-bf5f-69f07ad224b9'),
-(3, 9, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_100xAUTO_crop_center-center_none', 1, 1, 0, 0, '2021-09-21 12:25:51', '2021-09-21 12:25:51', '2021-09-21 12:25:52', '1c8221d0-f449-4a3e-89c1-ea1cdb4bef8d'),
-(4, 9, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_200xAUTO_crop_center-center_none', 1, 1, 0, 0, '2021-09-21 12:27:05', '2021-09-21 12:27:05', '2021-09-21 12:27:05', 'bf6c1508-abad-4e07-8127-193cf530b86b'),
-(7, 12, 'xp.jpeg', NULL, '_200xAUTO_crop_center-center_none', 1, 1, 0, 0, '2021-09-21 14:16:26', '2021-09-21 14:16:26', '2021-09-21 14:16:27', '269863d3-78bd-4fac-8aba-800a6e082ef7');
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `assettransforms`
---
-
-CREATE TABLE `assettransforms` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `mode` enum('stretch','fit','crop') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'crop',
-  `position` enum('top-left','top-center','top-right','center-left','center-center','center-right','bottom-left','bottom-center','bottom-right') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'center-center',
-  `width` int(11) UNSIGNED DEFAULT NULL,
-  `height` int(11) UNSIGNED DEFAULT NULL,
-  `format` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `quality` int(11) DEFAULT NULL,
-  `interlace` enum('none','line','plane','partition') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none',
-  `dimensionChangeTime` datetime DEFAULT NULL,
-  `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+INSERT INTO `assets` (`id`, `volumeId`, `folderId`, `uploaderId`, `filename`, `kind`, `alt`, `width`, `height`, `size`, `focalPoint`, `deletedWithVolume`, `keptFile`, `dateModified`, `dateCreated`, `dateUpdated`) VALUES
+(9, 1, 4, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', 'image', NULL, 611, 765, 595597, NULL, NULL, NULL, '2021-09-21 10:13:42', '2021-09-21 10:13:42', '2021-09-21 10:13:42'),
+(12, 1, 4, 1, 'xp.jpeg', 'image', NULL, 3840, 2160, 708738, NULL, NULL, NULL, '2021-09-21 14:16:20', '2021-09-21 13:23:20', '2021-09-21 14:16:20');
 
 -- --------------------------------------------------------
 
@@ -160,8 +153,7 @@ CREATE TABLE `categories` (
   `parentId` int(11) DEFAULT NULL,
   `deletedWithGroup` tinyint(1) DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+  `dateUpdated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -342,7 +334,7 @@ CREATE TABLE `deprecationerrors` (
 
 CREATE TABLE `drafts` (
   `id` int(11) NOT NULL,
-  `sourceId` int(11) DEFAULT NULL,
+  `canonicalId` int(11) DEFAULT NULL,
   `creatorId` int(11) DEFAULT NULL,
   `provisional` tinyint(1) NOT NULL DEFAULT 0,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -351,28 +343,6 @@ CREATE TABLE `drafts` (
   `dateLastMerged` datetime DEFAULT NULL,
   `saved` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `elementindexsettings`
---
-
-CREATE TABLE `elementindexsettings` (
-  `id` int(11) NOT NULL,
-  `type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `settings` text COLLATE utf8_unicode_ci DEFAULT NULL,
-  `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Gegevens worden geëxporteerd voor tabel `elementindexsettings`
---
-
-INSERT INTO `elementindexsettings` (`id`, `type`, `settings`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 'craft\\elements\\User', '{\"sources\":{\"group:d3315dc2-f048-4bbf-be48-94be8ea6f29d\":{\"tableAttributes\":{\"1\":\"fullName\",\"2\":\"email\",\"3\":\"dateCreated\",\"4\":\"username\",\"5\":\"lastLoginDate\"}}}}', '2021-09-20 15:03:49', '2021-09-20 15:03:49', '32ed712b-6271-4543-9820-adaee658885c');
 
 -- --------------------------------------------------------
 
@@ -466,17 +436,16 @@ CREATE TABLE `entries` (
   `expiryDate` datetime DEFAULT NULL,
   `deletedWithEntryType` tinyint(1) DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+  `dateUpdated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Gegevens worden geëxporteerd voor tabel `entries`
 --
 
-INSERT INTO `entries` (`id`, `sectionId`, `parentId`, `typeId`, `authorId`, `postDate`, `expiryDate`, `deletedWithEntryType`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(10, 2, NULL, 2, 1, '2021-09-21 11:26:00', NULL, 0, '2021-09-21 11:26:03', '2021-09-21 11:26:03', '4538ff3d-cc3a-41aa-9174-6772155bf74d'),
-(11, 2, NULL, 2, 1, '2021-09-21 11:26:00', NULL, NULL, '2021-09-21 11:26:11', '2021-09-21 11:26:11', '2ed65f14-9b0e-44dd-9ac9-b7485b2196b8');
+INSERT INTO `entries` (`id`, `sectionId`, `parentId`, `typeId`, `authorId`, `postDate`, `expiryDate`, `deletedWithEntryType`, `dateCreated`, `dateUpdated`) VALUES
+(10, 2, NULL, 2, 1, '2021-09-21 11:26:00', NULL, 0, '2021-09-21 11:26:03', '2021-09-21 11:26:03'),
+(11, 2, NULL, 2, 1, '2021-09-21 11:26:00', NULL, NULL, '2021-09-21 11:26:11', '2021-09-21 11:26:11');
 
 -- --------------------------------------------------------
 
@@ -556,9 +525,6 @@ CREATE TABLE `fieldlayoutfields` (
 --
 
 INSERT INTO `fieldlayoutfields` (`id`, `layoutId`, `tabId`, `fieldId`, `required`, `sortOrder`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(3, 2, 8, 3, 0, 1, '2021-09-20 08:37:34', '2021-09-20 08:37:34', 'dfb48f8a-5323-482e-b2aa-ef54983d68f8'),
-(4, 2, 8, 4, 0, 2, '2021-09-20 08:37:34', '2021-09-20 08:37:34', '3189f622-9a3e-479b-bf89-12d05e7db3c0'),
-(22, 3, 12, 7, 0, 3, '2021-09-20 14:45:39', '2021-09-20 14:45:39', '75a62506-ed18-4739-a2e7-1145dde5485d'),
 (29, 4, 16, 7, 0, 1, '2021-09-21 08:21:51', '2021-09-21 08:21:51', '1a5be1ad-aba4-4a39-8db5-e2655273ab5d');
 
 -- --------------------------------------------------------
@@ -596,6 +562,7 @@ CREATE TABLE `fieldlayouttabs` (
   `id` int(11) NOT NULL,
   `layoutId` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `settings` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `elements` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `sortOrder` smallint(6) UNSIGNED DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
@@ -607,11 +574,11 @@ CREATE TABLE `fieldlayouttabs` (
 -- Gegevens worden geëxporteerd voor tabel `fieldlayouttabs`
 --
 
-INSERT INTO `fieldlayouttabs` (`id`, `layoutId`, `name`, `elements`, `sortOrder`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(6, 1, 'Inhoud', '[{\"type\":\"craft\\\\fieldlayoutelements\\\\AssetTitleField\",\"autocomplete\":false,\"class\":null,\"size\":null,\"name\":null,\"autocorrect\":true,\"autocapitalize\":true,\"disabled\":false,\"readonly\":false,\"title\":null,\"placeholder\":null,\"step\":null,\"min\":null,\"max\":null,\"requirable\":false,\"id\":null,\"containerAttributes\":[],\"inputContainerAttributes\":[],\"labelAttributes\":[],\"orientation\":null,\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"width\":100}]', 1, '2021-09-20 08:12:40', '2021-09-20 08:12:40', 'b830c602-14fc-4b20-a583-98abfc066716'),
-(8, 2, 'Inhoud', '[{\"type\":\"craft\\\\fieldlayoutelements\\\\EntryTitleField\",\"autocomplete\":false,\"class\":null,\"size\":null,\"name\":null,\"autocorrect\":true,\"autocapitalize\":true,\"disabled\":false,\"readonly\":false,\"title\":null,\"placeholder\":null,\"step\":null,\"min\":null,\"max\":null,\"requirable\":false,\"id\":null,\"containerAttributes\":[],\"inputContainerAttributes\":[],\"labelAttributes\":[],\"orientation\":null,\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"width\":100},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"04302099-b1f0-4a25-8180-b8936ac35b7d\"},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"c8554b26-1fbb-4154-8f31-8ea9da472549\"}]', 1, '2021-09-20 08:37:34', '2021-09-20 08:37:34', 'b97c9108-4d4f-416d-805d-f2794c7d7d38'),
-(12, 3, 'Inhoud', '[{\"type\":\"craft\\\\fieldlayoutelements\\\\EntryTitleField\",\"autocomplete\":false,\"class\":null,\"size\":null,\"name\":null,\"autocorrect\":true,\"autocapitalize\":true,\"disabled\":false,\"readonly\":false,\"title\":null,\"placeholder\":null,\"step\":null,\"min\":null,\"max\":null,\"requirable\":false,\"id\":null,\"containerAttributes\":[],\"inputContainerAttributes\":[],\"labelAttributes\":[],\"orientation\":null,\"label\":\"Titel\",\"instructions\":\"\",\"tip\":null,\"warning\":null,\"width\":100},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"f8b6646a-dd2d-476e-917f-97b44bfcc712\"},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"fae7db13-6e00-4668-99bb-9afc3ac2e5a2\"},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7\"}]', 1, '2021-09-20 14:45:39', '2021-09-20 14:45:39', 'a6ac7201-d514-42aa-b57b-cc0b85a34eb4'),
-(16, 4, 'UserInfo', '[{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"84b801b8-940b-4cee-b604-71342dea325d\"},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7\"}]', 1, '2021-09-21 08:21:51', '2021-09-21 08:21:51', '53bcc722-8ba1-40bd-b876-8cac27d1b92d');
+INSERT INTO `fieldlayouttabs` (`id`, `layoutId`, `name`, `settings`, `elements`, `sortOrder`, `dateCreated`, `dateUpdated`, `uid`) VALUES
+(16, 4, 'UserInfo', NULL, '[{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"84b801b8-940b-4cee-b604-71342dea325d\",\"uid\":\"6884a8b8-013f-441d-80d3-660d8b0866e3\"},{\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"label\":null,\"instructions\":null,\"tip\":null,\"warning\":null,\"required\":false,\"width\":100,\"fieldUid\":\"f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7\",\"uid\":\"45f6b78f-b1d0-4c20-98a8-1692819e0b9b\"}]', 1, '2021-09-21 08:21:51', '2022-10-19 19:20:31', '53bcc722-8ba1-40bd-b876-8cac27d1b92d'),
+(17, 1, 'Inhoud', '{\"userCondition\":null,\"elementCondition\":null}', '[{\"autocapitalize\":true,\"autocomplete\":false,\"autocorrect\":true,\"class\":null,\"disabled\":false,\"id\":null,\"instructions\":null,\"label\":null,\"max\":null,\"min\":null,\"name\":null,\"orientation\":null,\"placeholder\":null,\"readonly\":false,\"requirable\":false,\"size\":null,\"step\":null,\"tip\":null,\"title\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\assets\\\\AssetTitleField\",\"warning\":null,\"width\":100,\"uid\":\"51070135-8b20-481c-aee0-28e6fa45ae99\"}]', 1, '2022-10-19 19:20:31', '2022-10-19 19:20:31', '8a80cb5f-c78d-43da-9c92-ee270777b8ac'),
+(18, 3, 'Inhoud', '{\"userCondition\":null,\"elementCondition\":null}', '[{\"autocapitalize\":true,\"autocomplete\":false,\"autocorrect\":true,\"class\":null,\"disabled\":false,\"id\":null,\"instructions\":\"\",\"label\":\"Titel\",\"max\":null,\"min\":null,\"name\":null,\"orientation\":null,\"placeholder\":null,\"readonly\":false,\"requirable\":false,\"size\":null,\"step\":null,\"tip\":null,\"title\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\entries\\\\EntryTitleField\",\"warning\":null,\"width\":100,\"uid\":\"b76f4d1e-dcc5-4865-a6b6-b8d3f3cd9e87\"},{\"fieldUid\":\"f8b6646a-dd2d-476e-917f-97b44bfcc712\",\"instructions\":null,\"label\":null,\"required\":false,\"tip\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"warning\":null,\"width\":100,\"uid\":\"fab129f1-276d-416a-afd7-ff01a820d167\"},{\"fieldUid\":\"fae7db13-6e00-4668-99bb-9afc3ac2e5a2\",\"instructions\":null,\"label\":null,\"required\":false,\"tip\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"warning\":null,\"width\":100,\"uid\":\"1dfaf827-b57e-4a93-bf2b-c0d68f3351ac\"},{\"fieldUid\":\"f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7\",\"instructions\":null,\"label\":null,\"required\":false,\"tip\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"warning\":null,\"width\":100,\"uid\":\"0b049b53-b182-4ec4-93f6-b1616ee6af81\"}]', 1, '2022-10-19 19:20:31', '2022-10-19 19:20:31', 'df6a5849-3089-41df-a599-8285066c7382'),
+(19, 2, 'Inhoud', '{\"userCondition\":null,\"elementCondition\":null}', '[{\"autocapitalize\":true,\"autocomplete\":false,\"autocorrect\":true,\"class\":null,\"disabled\":false,\"id\":null,\"instructions\":null,\"label\":null,\"max\":null,\"min\":null,\"name\":null,\"orientation\":null,\"placeholder\":null,\"readonly\":false,\"requirable\":false,\"size\":null,\"step\":null,\"tip\":null,\"title\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\entries\\\\EntryTitleField\",\"warning\":null,\"width\":100,\"uid\":\"f4c6e76f-792a-4558-a0b3-6fb7e6e694b9\"},{\"fieldUid\":\"04302099-b1f0-4a25-8180-b8936ac35b7d\",\"instructions\":null,\"label\":null,\"required\":false,\"tip\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"warning\":null,\"width\":100,\"uid\":\"b8a8dc35-523a-405b-9468-175eecb97196\"},{\"fieldUid\":\"c8554b26-1fbb-4154-8f31-8ea9da472549\",\"instructions\":null,\"label\":null,\"required\":false,\"tip\":null,\"type\":\"craft\\\\fieldlayoutelements\\\\CustomField\",\"warning\":null,\"width\":100,\"uid\":\"0017b58a-8bbf-4722-8ad6-0136d13903c5\"}]', 1, '2022-10-19 19:20:31', '2022-10-19 19:20:31', '13b077c4-b61e-4cc9-b8af-abeadd0b21ae');
 
 -- --------------------------------------------------------
 
@@ -715,6 +682,62 @@ INSERT INTO `gqltokens` (`id`, `name`, `accessToken`, `enabled`, `expiryDate`, `
 -- --------------------------------------------------------
 
 --
+-- Tabelstructuur voor tabel `imagetransformindex`
+--
+
+CREATE TABLE `imagetransformindex` (
+  `id` int(11) NOT NULL,
+  `assetId` int(11) NOT NULL,
+  `transformer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `filename` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `format` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `transformString` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `fileExists` tinyint(1) NOT NULL DEFAULT 0,
+  `inProgress` tinyint(1) NOT NULL DEFAULT 0,
+  `error` tinyint(1) NOT NULL DEFAULT 0,
+  `dateIndexed` datetime DEFAULT NULL,
+  `dateCreated` datetime NOT NULL,
+  `dateUpdated` datetime NOT NULL,
+  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Gegevens worden geëxporteerd voor tabel `imagetransformindex`
+--
+
+INSERT INTO `imagetransformindex` (`id`, `assetId`, `transformer`, `filename`, `format`, `transformString`, `fileExists`, `inProgress`, `error`, `dateIndexed`, `dateCreated`, `dateUpdated`, `uid`) VALUES
+(1, 9, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_150x150_crop_center-center_none', 1, 0, 0, '2021-09-21 10:13:44', '2021-09-21 10:13:44', '2021-09-21 10:13:44', 'ec31a262-696f-4d3a-aa2c-3f56b9c58f8c'),
+(2, 9, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_100x150_crop_center-center_none', 1, 0, 0, '2021-09-21 12:20:37', '2021-09-21 12:20:37', '2021-09-21 12:20:38', '0a2bb2cd-2ab9-4511-bf5f-69f07ad224b9'),
+(3, 9, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_100xAUTO_crop_center-center_none', 1, 0, 0, '2021-09-21 12:25:51', '2021-09-21 12:25:51', '2021-09-21 12:25:52', '1c8221d0-f449-4a3e-89c1-ea1cdb4bef8d'),
+(4, 9, NULL, 'Schermafbeelding-2021-09-08-om-09.29.27.png', NULL, '_200xAUTO_crop_center-center_none', 1, 0, 0, '2021-09-21 12:27:05', '2021-09-21 12:27:05', '2021-09-21 12:27:05', 'bf6c1508-abad-4e07-8127-193cf530b86b'),
+(7, 12, NULL, 'xp.jpeg', NULL, '_200xAUTO_crop_center-center_none', 1, 0, 0, '2021-09-21 14:16:26', '2021-09-21 14:16:26', '2021-09-21 14:16:27', '269863d3-78bd-4fac-8aba-800a6e082ef7');
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `imagetransforms`
+--
+
+CREATE TABLE `imagetransforms` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `mode` enum('stretch','fit','crop') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'crop',
+  `position` enum('top-left','top-center','top-right','center-left','center-center','center-right','bottom-left','bottom-center','bottom-right') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'center-center',
+  `width` int(11) UNSIGNED DEFAULT NULL,
+  `height` int(11) UNSIGNED DEFAULT NULL,
+  `format` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `quality` int(11) DEFAULT NULL,
+  `interlace` enum('none','line','plane','partition') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none',
+  `parameterChangeTime` datetime DEFAULT NULL,
+  `dateCreated` datetime NOT NULL,
+  `dateUpdated` datetime NOT NULL,
+  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tabelstructuur voor tabel `info`
 --
 
@@ -735,7 +758,7 @@ CREATE TABLE `info` (
 --
 
 INSERT INTO `info` (`id`, `version`, `schemaVersion`, `maintenance`, `configVersion`, `fieldVersion`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, '3.7.16', '3.7.8', 0, 'faykuoqrodap', 'rgchhbdkrlct', '2021-09-17 14:43:42', '2021-10-12 09:41:29', '580fce33-d1d8-4d72-a46a-4536b0d0f93d');
+(1, '4.2.8', '4.0.0.9', 0, 'tkjrxnmqpqpa', 'rgchhbdkrlct', '2021-09-17 14:43:42', '2022-10-19 19:20:31', '580fce33-d1d8-4d72-a46a-4536b0d0f93d');
 
 -- --------------------------------------------------------
 
@@ -745,14 +768,24 @@ INSERT INTO `info` (`id`, `version`, `schemaVersion`, `maintenance`, `configVers
 
 CREATE TABLE `matrixblocks` (
   `id` int(11) NOT NULL,
-  `ownerId` int(11) NOT NULL,
+  `primaryOwnerId` int(11) NOT NULL,
   `fieldId` int(11) NOT NULL,
   `typeId` int(11) NOT NULL,
-  `sortOrder` smallint(6) UNSIGNED DEFAULT NULL,
   `deletedWithOwner` tinyint(1) DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+  `dateUpdated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `matrixblocks_owners`
+--
+
+CREATE TABLE `matrixblocks_owners` (
+  `blockId` int(11) NOT NULL,
+  `ownerId` int(11) NOT NULL,
+  `sortOrder` smallint(6) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -992,7 +1025,31 @@ INSERT INTO `migrations` (`id`, `track`, `name`, `applyTime`, `dateCreated`, `da
 (196, 'plugin:seo', 'm201207_124200_add_product_types_to_sitemap', '2021-09-17 15:15:20', '2021-09-17 15:15:20', '2021-09-17 15:15:20', '2d61eb56-ba39-4931-8e7b-940526e49e62'),
 (197, 'plugin:redactor', 'm180430_204710_remove_old_plugins', '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2021-09-20 10:01:27', '06a34b44-2dae-442e-8b39-1d104ba20926'),
 (198, 'plugin:redactor', 'Install', '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2021-09-20 10:01:27', 'd72c2526-332b-4a5b-83a4-bb0c8424cb37'),
-(199, 'plugin:redactor', 'm190225_003922_split_cleanup_html_settings', '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2021-09-20 10:01:27', 'd0155633-9c63-4dfc-a1d2-e6696eae93a9');
+(199, 'plugin:redactor', 'm190225_003922_split_cleanup_html_settings', '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2021-09-20 10:01:27', 'd0155633-9c63-4dfc-a1d2-e6696eae93a9'),
+(200, 'craft', 'm210121_145800_asset_indexing_changes', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '953aa389-acfe-4006-95d1-7a8221f44baf'),
+(201, 'craft', 'm210624_222934_drop_deprecated_tables', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '2022-10-19 19:20:27', 'a8be156b-ba33-47d2-bfa8-f66101ea358a'),
+(202, 'craft', 'm210724_180756_rename_source_cols', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '4047a001-e4d1-4ab2-8c82-99dde9b0d204'),
+(203, 'craft', 'm210809_124211_remove_superfluous_uids', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '2022-10-19 19:20:27', '97d56f1e-567e-4a1b-95d3-22ee7fcee014'),
+(204, 'craft', 'm210817_014201_universal_users', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '620f28ae-174d-42f4-8a5f-22e5bb61a11d'),
+(205, 'craft', 'm210904_132612_store_element_source_settings_in_project_config', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '6deb97bf-6fe2-4972-a23f-1dfaa193cf39'),
+(206, 'craft', 'm211115_135500_image_transformers', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '3830c047-7f79-4cbb-8f74-dcde866eb2b8'),
+(207, 'craft', 'm211201_131000_filesystems', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'd37d2e20-b969-4242-ba6e-1337ef74442a'),
+(208, 'craft', 'm220103_043103_tab_conditions', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '7c802da7-2bde-448a-b25c-8a8ca193bfea'),
+(209, 'craft', 'm220104_003433_asset_alt_text', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'b989c281-e5f7-431e-911a-9355b0296a20'),
+(210, 'craft', 'm220123_213619_update_permissions', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '1218bd5c-7755-4142-9430-66661fad5a8b'),
+(211, 'craft', 'm220126_003432_addresses', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '28fe07e9-6938-4657-8d40-7bd3656cda08'),
+(212, 'craft', 'm220209_095604_add_indexes', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '2022-10-19 19:20:30', 'b9a16d6e-3eab-4f9d-b5ea-87dad054af24'),
+(213, 'craft', 'm220213_015220_matrixblocks_owners_table', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '3cf74434-ed3f-4ce7-a64e-822a1462c0b4'),
+(214, 'craft', 'm220214_000000_truncate_sessions', '2022-10-19 19:20:30', '2022-10-19 19:20:30', '2022-10-19 19:20:30', 'f3fbd060-ae60-4739-bf69-e5ffc2edcc62'),
+(215, 'craft', 'm220222_122159_full_names', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '382a49e5-b981-4a2f-9238-89c91007cb47'),
+(216, 'craft', 'm220223_180559_nullable_address_owner', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', 'b68ee61b-fea5-4a18-8bf3-665dcc301257'),
+(217, 'craft', 'm220225_165000_transform_filesystems', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2877aad6-be1e-4669-b974-0ed8737cac67'),
+(218, 'craft', 'm220309_152006_rename_field_layout_elements', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '0171e909-6891-4c73-a392-fbf5f5277cf2'),
+(219, 'craft', 'm220314_211928_field_layout_element_uids', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '5af90520-10b9-493f-9739-82a83add7c8f'),
+(220, 'craft', 'm220316_123800_transform_fs_subpath', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '99714726-f52f-4809-9349-6253a5f84b89'),
+(221, 'craft', 'm220317_174250_release_all_jobs', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', 'c5a63480-7218-4692-bb52-30d945c51575'),
+(222, 'craft', 'm220330_150000_add_site_gql_schema_components', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', 'c5fd8be8-5b8e-45e3-a71e-72d1de6b836a'),
+(223, 'craft', 'm220413_024536_site_enabled_string', '2022-10-19 19:20:31', '2022-10-19 19:20:31', '2022-10-19 19:20:31', 'e063cd8c-a173-423e-8a24-db9a2c3b6e12');
 
 -- --------------------------------------------------------
 
@@ -1018,11 +1075,11 @@ CREATE TABLE `plugins` (
 --
 
 INSERT INTO `plugins` (`id`, `handle`, `version`, `schemaVersion`, `licenseKeyStatus`, `licensedEdition`, `installDate`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 'seo', '3.7.4', '3.2.0', 'unknown', NULL, '2021-09-17 15:15:19', '2021-09-17 15:15:19', '2021-09-23 09:46:49', '491433ec-f7ea-4421-810e-deb1b9e947dc'),
-(2, 'contact-form', '2.2.7', '1.0.0', 'unknown', NULL, '2021-09-17 15:15:39', '2021-09-17 15:15:39', '2021-09-23 09:46:49', 'f048d146-7773-44fc-8ecf-3a18b2f51183'),
-(3, 'ckeditor', '1.1.2', '1.0.0', 'unknown', NULL, '2021-09-17 15:15:56', '2021-09-17 15:15:56', '2021-09-23 09:46:49', 'bab1be24-f7ba-4d35-be02-e4e8b68a2477'),
-(4, 'redactor', '2.8.8', '2.3.0', 'unknown', NULL, '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2021-09-23 09:46:49', '3b08584b-5ff0-4431-9129-5283c043a232'),
-(5, 'cp-css', '2.4.0', '2.0.0', 'unknown', NULL, '2021-09-23 09:46:14', '2021-09-23 09:46:15', '2021-09-23 09:46:49', 'eaee23e0-3c5d-4fcd-9574-fe0eae81b3fe');
+(1, 'seo', 'v4.0.3', '3.2.0', 'unknown', NULL, '2021-09-17 15:15:19', '2021-09-17 15:15:19', '2022-10-19 19:19:29', '491433ec-f7ea-4421-810e-deb1b9e947dc'),
+(2, 'contact-form', '3.0.0', '1.0.0', 'unknown', NULL, '2021-09-17 15:15:39', '2021-09-17 15:15:39', '2022-10-19 19:19:29', 'f048d146-7773-44fc-8ecf-3a18b2f51183'),
+(3, 'ckeditor', '2.0.0', '1.0.0', 'unknown', NULL, '2021-09-17 15:15:56', '2021-09-17 15:15:56', '2022-10-19 19:19:29', 'bab1be24-f7ba-4d35-be02-e4e8b68a2477'),
+(4, 'redactor', '3.0.2', '2.3.0', 'unknown', NULL, '2021-09-20 10:01:27', '2021-09-20 10:01:27', '2022-10-19 19:19:29', '3b08584b-5ff0-4431-9129-5283c043a232'),
+(5, 'cp-css', '2.5.0', '2.0.0', 'unknown', NULL, '2021-09-23 09:46:14', '2021-09-23 09:46:15', '2022-10-19 19:19:29', 'eaee23e0-3c5d-4fcd-9574-fe0eae81b3fe');
 
 -- --------------------------------------------------------
 
@@ -1040,7 +1097,7 @@ CREATE TABLE `projectconfig` (
 --
 
 INSERT INTO `projectconfig` (`path`, `value`) VALUES
-('dateModified', '1632390375'),
+('dateModified', '1666207229'),
 ('email.fromEmail', '\"pjotr@pixeldeluxe.nl\"'),
 ('email.fromName', '\"Inlog\"'),
 ('email.transportType', '\"craft\\\\mail\\\\transportadapters\\\\Sendmail\"'),
@@ -1063,7 +1120,7 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.step', 'null'),
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.tip', 'null'),
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.title', 'null'),
-('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\EntryTitleField\"'),
+('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\entries\\\\EntryTitleField\"'),
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.warning', 'null'),
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.0.width', '100'),
 ('entryTypes.57ad1d88-5e68-4049-ad0d-5b79454b07d1.fieldLayouts.de734b26-0d2c-49af-8fa2-d521e4ff4504.tabs.0.elements.1.fieldUid', '\"f8b6646a-dd2d-476e-917f-97b44bfcc712\"'),
@@ -1119,7 +1176,7 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.step', 'null'),
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.tip', 'null'),
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.title', 'null'),
-('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\EntryTitleField\"'),
+('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\entries\\\\EntryTitleField\"'),
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.warning', 'null'),
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.0.width', '100'),
 ('entryTypes.8162203a-8882-4748-9e2a-642a0b8870df.fieldLayouts.a7d3c70a-d36a-40aa-ba51-637f9a28ef26.tabs.0.elements.1.fieldUid', '\"04302099-b1f0-4a25-8180-b8936ac35b7d\"'),
@@ -1192,6 +1249,11 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('fields.f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7.translationKeyFormat', 'null'),
 ('fields.f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7.translationMethod', '\"none\"'),
 ('fields.f1497bca-02b2-4c0d-b9b6-1a18b4d49cf7.type', '\"craft\\\\ckeditor\\\\Field\"'),
+('fs.images.hasUrls', 'true'),
+('fs.images.name', '\"images\"'),
+('fs.images.settings.path', '\"/Users/pjotr/Sites/inlog/web/images\"'),
+('fs.images.type', '\"craft\\\\fs\\\\Local\"'),
+('fs.images.url', '\"//inlog.local/images/\"'),
 ('graphql.publicToken.enabled', 'true'),
 ('graphql.publicToken.expiryDate', 'null'),
 ('graphql.schemas.7e891c5b-79d1-49c9-988f-150aaa748c4d.isPublic', 'true'),
@@ -1300,9 +1362,10 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('system.live', 'true'),
 ('system.name', '\"Inlog\"'),
 ('system.retryDuration', 'null'),
-('system.schemaVersion', '\"3.7.8\"'),
+('system.schemaVersion', '\"4.0.0.9\"'),
 ('system.timeZone', '\"Europe/Amsterdam\"'),
 ('users.allowPublicRegistration', 'true'),
+('users.deactivateByDefault', 'false'),
 ('users.defaultGroup', '\"d3315dc2-f048-4bbf-be48-94be8ea6f29d\"'),
 ('users.fieldLayouts.081a596c-dd22-4fba-8b1f-0a95389011b9.tabs.0.elements.0.fieldUid', '\"84b801b8-940b-4cee-b604-71342dea325d\"'),
 ('users.fieldLayouts.081a596c-dd22-4fba-8b1f-0a95389011b9.tabs.0.elements.0.instructions', 'null'),
@@ -1326,20 +1389,20 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.handle', '\"indelingen\"'),
 ('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.name', '\"indelingen\"'),
 ('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.0', '\"createentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.1', '\"publishentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.10', '\"viewvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.2', '\"deleteentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.3', '\"editentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.4', '\"createentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.5', '\"publishentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.6', '\"deleteentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.7', '\"editentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.8', '\"saveassetinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
-('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.9', '\"replacefilesinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.1', '\"deleteentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.10', '\"saveentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.11', '\"assignusergroup:d3315dc2-f048-4bbf-be48-94be8ea6f29d\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.2', '\"createentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.3', '\"deleteentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.4', '\"viewassets:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.5', '\"saveassets:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.6', '\"replacefiles:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.7', '\"viewentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.8', '\"saveentries:32efab90-8c84-4627-bc29-0cafb97a65bc\"'),
+('users.groups.d3315dc2-f048-4bbf-be48-94be8ea6f29d.permissions.9', '\"viewentries:84a11e7d-9e21-46f9-8b24-7290df208456\"'),
 ('users.photoSubpath', '\"profile\"'),
 ('users.photoVolumeUid', '\"7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9\"'),
 ('users.requireEmailVerification', 'true'),
-('users.suspendByDefault', 'false'),
 ('users.validateOnPublicRegistration', 'false'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.autocapitalize', 'true'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.autocomplete', 'false'),
@@ -1360,19 +1423,18 @@ INSERT INTO `projectconfig` (`path`, `value`) VALUES
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.step', 'null'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.tip', 'null'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.title', 'null'),
-('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\AssetTitleField\"'),
+('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.type', '\"craft\\\\fieldlayoutelements\\\\assets\\\\AssetTitleField\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.warning', 'null'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.elements.0.width', '100'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.name', '\"Inhoud\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fieldLayouts.71d4a218-181e-495f-a0c2-ff4dd2879264.tabs.0.sortOrder', '1'),
+('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.fs', '\"images\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.handle', '\"images\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.hasUrls', 'true'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.name', '\"images\"'),
-('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.settings.path', '\"/Users/pjotr/Sites/inlog/web/images\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.sortOrder', '1'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.titleTranslationKeyFormat', 'null'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.titleTranslationMethod', 'null'),
-('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.type', '\"craft\\\\volumes\\\\Local\"'),
 ('volumes.7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9.url', '\"//inlog.local/images/\"');
 
 -- --------------------------------------------------------
@@ -1509,7 +1571,7 @@ INSERT INTO `resourcepaths` (`hash`, `path`) VALUES
 
 CREATE TABLE `revisions` (
   `id` int(11) NOT NULL,
-  `sourceId` int(11) NOT NULL,
+  `canonicalId` int(11) NOT NULL,
   `creatorId` int(11) DEFAULT NULL,
   `num` int(11) NOT NULL,
   `notes` text COLLATE utf8_unicode_ci DEFAULT NULL
@@ -1519,7 +1581,7 @@ CREATE TABLE `revisions` (
 -- Gegevens worden geëxporteerd voor tabel `revisions`
 --
 
-INSERT INTO `revisions` (`id`, `sourceId`, `creatorId`, `num`, `notes`) VALUES
+INSERT INTO `revisions` (`id`, `canonicalId`, `creatorId`, `num`, `notes`) VALUES
 (1, 10, 1, 1, '');
 
 -- --------------------------------------------------------
@@ -1721,17 +1783,6 @@ CREATE TABLE `sessions` (
   `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Gegevens worden geëxporteerd voor tabel `sessions`
---
-
-INSERT INTO `sessions` (`id`, `userId`, `token`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 1, 'nq_66rol0zz7U5uL9lAAkQuKOmvMGvmkBVPp-v0LNczYXfd-d76-Cbu6zRg1eNYoIJT8Zl5qdpWg_jnGVRIYGYc8RGzi_r4_JoQw', '2021-09-17 14:43:45', '2021-09-17 15:20:02', '0ce55634-232a-4b12-9a77-05a8cc880d29'),
-(2, 1, 'bomHmh6ZHabK6DoJoYZ19NNQrhSu3jiuxSL3-CNg5kSmqG9rzTaR0v17PVqBIzYIpod_in3oMxdzZUksSWen3LPyv1YLiSkhW_jO', '2021-09-20 07:12:42', '2021-09-20 13:18:23', 'd86989b0-474f-4bbd-9085-2c56764913ed'),
-(11, 7, '_1KqwuVCLzZ3RtjsHqio1eYc27j1xLostmwUEx7W7owZeIG8QPa1ptozRCsb7PYKUtDPtZle50SqXja9XwVcKjMtQlw00fJBCwop', '2021-09-20 15:29:02', '2021-09-20 15:29:02', '30939156-a38a-409c-84c9-e9bbb01853ed'),
-(12, 1, 'MiXy_ryNXSG7Y_SNHEBVSsBGbMQtH49Z-9gikAVUBdFt5UvZi9d5WKe6Bsej6NeD3aWvxpMDEC340R3hb8yzV7r3YKO_xrPdv8cH', '2021-09-21 07:13:35', '2021-09-21 07:13:57', '1817d5fb-043a-4e85-a6f2-68f86b8e5bb9'),
-(27, 8, '5Oxnp0by6-F0c8umgctHPwQPJOtSebKWbkOkWsdDqQI0kzC50wza3kS5UwunJ_bZaBdjWiLNlLfsujoqsEZImdSuEiz62l-QvHoo', '2021-09-21 14:28:05', '2021-09-21 15:29:42', 'b5b82b9d-201c-4375-a8aa-a09c417d3691');
-
 -- --------------------------------------------------------
 
 --
@@ -1780,7 +1831,7 @@ CREATE TABLE `sites` (
   `id` int(11) NOT NULL,
   `groupId` int(11) NOT NULL,
   `primary` tinyint(1) NOT NULL,
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
+  `enabled` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'true',
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `language` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
@@ -1798,7 +1849,7 @@ CREATE TABLE `sites` (
 --
 
 INSERT INTO `sites` (`id`, `groupId`, `primary`, `enabled`, `name`, `handle`, `language`, `hasUrls`, `baseUrl`, `sortOrder`, `dateCreated`, `dateUpdated`, `dateDeleted`, `uid`) VALUES
-(1, 1, 1, 1, 'Inlog', 'default', 'nl', 1, '$PRIMARY_SITE_URL', 1, '2021-09-17 14:43:42', '2021-09-17 14:43:42', NULL, '341c12ec-dfad-49a9-a1d0-8a10df36b6df');
+(1, 1, 1, '1', 'Inlog', 'default', 'nl', 1, '$PRIMARY_SITE_URL', 1, '2021-09-17 14:43:42', '2021-09-17 14:43:42', NULL, '341c12ec-dfad-49a9-a1d0-8a10df36b6df');
 
 -- --------------------------------------------------------
 
@@ -1879,48 +1930,7 @@ CREATE TABLE `tags` (
   `groupId` int(11) NOT NULL,
   `deletedWithGroup` tinyint(1) DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `templatecacheelements`
---
-
-CREATE TABLE `templatecacheelements` (
-  `id` int(11) NOT NULL,
-  `cacheId` int(11) NOT NULL,
-  `elementId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `templatecachequeries`
---
-
-CREATE TABLE `templatecachequeries` (
-  `id` int(11) NOT NULL,
-  `cacheId` int(11) NOT NULL,
-  `type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `query` longtext COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `templatecaches`
---
-
-CREATE TABLE `templatecaches` (
-  `id` int(11) NOT NULL,
-  `siteId` int(11) NOT NULL,
-  `cacheKey` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `expiryDate` datetime NOT NULL,
-  `body` mediumtext COLLATE utf8_unicode_ci NOT NULL
+  `dateUpdated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2018,17 +2028,18 @@ CREATE TABLE `userpermissions` (
 --
 
 INSERT INTO `userpermissions` (`id`, `name`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 'saveassetinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2021-09-17 15:14:29', '2021-09-17 15:14:29', 'b6e143b9-0df3-498a-a95d-5437fb9e5f14'),
-(2, 'viewvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2021-09-17 15:14:29', '2021-09-17 15:14:29', '3e40a4d2-d26f-47a3-8fd2-701c2fa46bd4'),
 (3, 'createentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2021-09-20 08:31:14', '2021-09-20 08:31:14', 'f146d743-fcab-4d09-9389-cec043d92425'),
-(4, 'publishentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '7ec70b24-c578-4ddd-a16b-e0af3da2bfdd'),
 (5, 'deleteentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '3cfcffba-832f-434b-ae5d-2d7dca43a60a'),
-(6, 'editentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2021-09-20 08:31:14', '2021-09-20 08:31:14', 'd6d02573-9f6a-4d56-81e0-ecc5c828e3b3'),
 (7, 'createentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '3805b3d6-08ef-4036-b42c-6011f49c6fc4'),
-(8, 'publishentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '58005921-b168-4485-9ba3-3b688d0869ca'),
 (9, 'deleteentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2021-09-20 08:31:14', '2021-09-20 08:31:14', 'd8553f48-578b-43ad-9c17-3107c108125b'),
-(10, 'editentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '82c96131-4a87-488a-bb14-92d92656383e'),
-(11, 'replacefilesinvolume:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2021-09-20 08:31:14', '2021-09-20 08:31:14', '6f3eb067-c0e9-41ac-879f-46ebce18fc4b');
+(12, 'viewassets:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '6723ec24-2d70-474a-a179-bb0391987552'),
+(13, 'saveassets:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '683f565d-e5a8-40b9-a595-86fd0cb0bb2a'),
+(14, 'replacefiles:7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '77309a23-2acb-4c2b-9b71-1c369f3414de'),
+(15, 'viewentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'd5ced6be-382c-4b26-bef6-c5b3278917b7'),
+(16, 'saveentries:32efab90-8c84-4627-bc29-0cafb97a65bc', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '07178fab-178f-4084-9b20-0fa000b486fb'),
+(17, 'viewentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '5a357c57-88e2-483c-8558-9216e99cf65b'),
+(18, 'saveentries:84a11e7d-9e21-46f9-8b24-7290df208456', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '721cc7f9-d861-4fa6-a546-5d2798571182'),
+(19, 'assignusergroup:d3315dc2-f048-4bbf-be48-94be8ea6f29d', '2022-10-19 19:20:29', '2022-10-19 19:20:29', '45ea21ae-78be-4cf7-acb2-91fceffd0277');
 
 -- --------------------------------------------------------
 
@@ -2050,17 +2061,18 @@ CREATE TABLE `userpermissions_usergroups` (
 --
 
 INSERT INTO `userpermissions_usergroups` (`id`, `permissionId`, `groupId`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(27, 3, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', 'ef1821ef-4f65-4cdd-97f4-51b7cc755f59'),
-(28, 4, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '3e9d4844-5f4d-42f2-a490-c62d68f082d5'),
-(29, 5, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '78e979ed-e741-4a59-bbd4-670c7d62351f'),
-(30, 6, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', 'cfc837e1-cf5d-4818-900c-386c4e6570bb'),
-(31, 7, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '6ce708cc-c130-4fec-a95c-f0fedfa3a280'),
-(32, 8, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', 'a2a11330-2c64-4edd-b21f-7cdcc4aa0b59'),
-(33, 9, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '0f4d1266-2f7f-4305-ae0a-5b38bbe2f3c2'),
-(34, 10, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', 'fe74bab0-39cc-4a1e-ba36-ad2027744c0f'),
-(35, 1, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', 'b7161a4e-6a10-4026-8997-219d4d68a0ec'),
-(36, 11, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '321b42cb-4293-4dfa-96d2-f71866f53f3c'),
-(37, 2, 1, '2021-09-20 15:18:58', '2021-09-20 15:18:58', '63c51105-190e-4908-9476-cbc8a4f4a1c1');
+(38, 3, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'a6136549-1324-470a-8f92-3616040867e6'),
+(39, 5, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '972c511d-7d91-4c98-a1ed-253ff5df1d4c'),
+(40, 7, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'f9953156-a6d4-4e9a-b671-ca97ac923467'),
+(41, 9, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'b75f643c-c22e-4520-a526-dddb7f6b035c'),
+(42, 12, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '77e6c02e-b47e-46a4-ad06-85ea4c4e01e6'),
+(43, 13, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '7fc91fad-9e99-4a03-a754-1bfbb31da37f'),
+(44, 14, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '09676671-87b4-4d55-a902-668c9e5b4367'),
+(45, 15, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '0ae097b6-f26b-4182-82ec-9a8e6372c415'),
+(46, 16, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '4b854c53-285b-4f1a-a058-33114b1aa373'),
+(47, 17, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'de3953b0-5d66-4cde-b84e-cb346c049fdb'),
+(48, 18, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', '6de5c047-bb94-48c7-a42f-26c25a124460'),
+(49, 19, 1, '2022-10-19 19:20:29', '2022-10-19 19:20:29', 'a8e61c24-c814-48c3-9a87-da8534bdab26');
 
 -- --------------------------------------------------------
 
@@ -2110,13 +2122,15 @@ INSERT INTO `userpreferences` (`userId`, `preferences`) VALUES
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `photoId` int(11) DEFAULT NULL,
-  `firstName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `lastName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 0,
   `locked` tinyint(1) NOT NULL DEFAULT 0,
   `suspended` tinyint(1) NOT NULL DEFAULT 0,
   `pending` tinyint(1) NOT NULL DEFAULT 0,
@@ -2133,23 +2147,22 @@ CREATE TABLE `users` (
   `passwordResetRequired` tinyint(1) NOT NULL DEFAULT 0,
   `lastPasswordChangeDate` datetime DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
-  `dateUpdated` datetime NOT NULL,
-  `uid` char(36) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'
+  `dateUpdated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Gegevens worden geëxporteerd voor tabel `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `photoId`, `firstName`, `lastName`, `email`, `password`, `admin`, `locked`, `suspended`, `pending`, `lastLoginDate`, `lastLoginAttemptIp`, `invalidLoginWindowStart`, `invalidLoginCount`, `lastInvalidLoginDate`, `lockoutDate`, `hasDashboard`, `verificationCode`, `verificationCodeIssuedDate`, `unverifiedEmail`, `passwordResetRequired`, `lastPasswordChangeDate`, `dateCreated`, `dateUpdated`, `uid`) VALUES
-(1, 'Paniek', 12, '', '', 'PjotrW15@Gmail.com', '$2y$13$CVycCTH8P62k.zejyaEbXO8RZd1UV1lBIlhvgCpPuf3HcMS4gyMca', 1, 0, 0, 0, '2021-09-23 09:45:36', NULL, NULL, NULL, '2021-09-21 12:37:16', NULL, 1, '$2y$13$bfSLMizsiezXfHCx/b1nrOgss77AHI/qE6FFC/Enr6R.ymbHO6YlC', '2021-09-20 14:24:58', NULL, 0, '2021-09-17 14:43:45', '2021-09-17 14:43:45', '2021-09-23 09:45:36', '77e0bdca-855a-4a1d-9ee8-7a96f04e3dfd'),
-(2, 'Yesman', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 0, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, '$2y$13$DrjDZXCSY8eUVi0DCwKjI.638Nto/8uH2Ai6zeC9AMJV0gb.hIqBi', '2021-09-20 14:10:20', NULL, 0, NULL, '2021-09-20 14:07:46', '2021-09-20 14:10:20', '54640130-442e-4b4d-ae69-635f6a00340b'),
-(3, 'Yesman', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 0, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2021-09-20 14:35:34', '2021-09-20 14:35:34', '104f86fe-7fe7-4a23-9ada-f55318570128'),
-(4, 'Yesman', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2021-09-20 14:57:27', '2021-09-20 15:01:49', 'a2dfd2f5-abdd-4f6a-a1df-82b20fa0e569'),
-(5, 'Yesman', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', '$2y$13$3Sa7ru4YjxTuF4Af6bsOH.ljrVwy8CSlgOYi5vk0UVoaNJgI2WTYS', 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:20:42', '2021-09-20 15:20:42', '2021-09-20 15:24:16', 'c57e2377-64c5-4eab-9b3b-706470f260ae'),
-(6, 'Yesman', NULL, 'Pjotr', 'Wisse', 'kipopi7622@tst999.com', '$2y$13$put6ZmEWZ4B/1mCYl9LSBesVmv6l3InaUYdc/R7PgodNAYyHx8grC', 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:25:57', '2021-09-20 15:25:57', '2021-09-20 15:25:57', 'd14365a3-b951-4738-aa5f-5d7f1c17c370'),
-(7, 'Yesman', NULL, 'Pjotr', 'Wisse', 'kipopi7622@tst999.com', '$2y$13$sB2lc6CYiho2yPFG8GRMwO5YJO7VJ6oy1/6WGOX.p93zEA1yPUMuu', 0, 0, 0, 0, '2021-09-20 15:29:02', NULL, '2021-09-21 07:24:52', 1, '2021-09-21 07:24:52', NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:26:37', '2021-09-20 15:26:37', '2021-09-21 07:24:52', '12b6f5c7-2cf2-4d30-8ed7-622be051e944'),
-(8, 'Dude', 9, 'Pjotr', 'Wisse', 'sogac51771@tst999.com', '$2y$13$WTj5xZXFuBLhw5mswhFtVuH9.tznuzE0T3MTDWK7Bf5zRw2RnWpFq', 0, 0, 0, 0, '2021-09-21 14:28:05', NULL, NULL, NULL, '2021-09-21 14:14:58', NULL, 0, NULL, NULL, NULL, 0, '2021-09-21 09:25:51', '2021-09-21 07:30:28', '2021-09-21 14:49:47', 'a25a9dd0-b5d9-499c-b79c-bc9ef4e078c7');
+INSERT INTO `users` (`id`, `username`, `fullName`, `photoId`, `firstName`, `lastName`, `email`, `password`, `admin`, `active`, `locked`, `suspended`, `pending`, `lastLoginDate`, `lastLoginAttemptIp`, `invalidLoginWindowStart`, `invalidLoginCount`, `lastInvalidLoginDate`, `lockoutDate`, `hasDashboard`, `verificationCode`, `verificationCodeIssuedDate`, `unverifiedEmail`, `passwordResetRequired`, `lastPasswordChangeDate`, `dateCreated`, `dateUpdated`) VALUES
+(1, 'Paniek', NULL, 12, '', '', 'PjotrW15@Gmail.com', '$2y$13$CVycCTH8P62k.zejyaEbXO8RZd1UV1lBIlhvgCpPuf3HcMS4gyMca', 1, 1, 0, 0, 0, '2021-09-23 09:45:36', NULL, NULL, NULL, '2021-09-21 12:37:16', NULL, 1, '$2y$13$bfSLMizsiezXfHCx/b1nrOgss77AHI/qE6FFC/Enr6R.ymbHO6YlC', '2021-09-20 14:24:58', NULL, 0, '2021-09-17 14:43:45', '2021-09-17 14:43:45', '2022-10-19 19:20:28'),
+(2, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 0, 0, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, '$2y$13$DrjDZXCSY8eUVi0DCwKjI.638Nto/8uH2Ai6zeC9AMJV0gb.hIqBi', '2021-09-20 14:10:20', NULL, 0, NULL, '2021-09-20 14:07:46', '2021-09-20 14:10:20'),
+(3, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 0, 0, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2021-09-20 14:35:34', '2021-09-20 14:35:34'),
+(4, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', NULL, 0, 1, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, NULL, '2021-09-20 14:57:27', '2022-10-19 19:20:28'),
+(5, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'PjotrW15@Gmail.com', '$2y$13$3Sa7ru4YjxTuF4Af6bsOH.ljrVwy8CSlgOYi5vk0UVoaNJgI2WTYS', 0, 1, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:20:42', '2021-09-20 15:20:42', '2022-10-19 19:20:28'),
+(6, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'kipopi7622@tst999.com', '$2y$13$put6ZmEWZ4B/1mCYl9LSBesVmv6l3InaUYdc/R7PgodNAYyHx8grC', 0, 1, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:25:57', '2021-09-20 15:25:57', '2022-10-19 19:20:28'),
+(7, 'Yesman', 'Pjotr Wisse', NULL, 'Pjotr', 'Wisse', 'kipopi7622@tst999.com', '$2y$13$sB2lc6CYiho2yPFG8GRMwO5YJO7VJ6oy1/6WGOX.p93zEA1yPUMuu', 0, 1, 0, 0, 0, '2021-09-20 15:29:02', NULL, '2021-09-21 07:24:52', 1, '2021-09-21 07:24:52', NULL, 0, NULL, NULL, NULL, 0, '2021-09-20 15:26:37', '2021-09-20 15:26:37', '2022-10-19 19:20:28'),
+(8, 'Dude', 'Pjotr Wisse', 9, 'Pjotr', 'Wisse', 'sogac51771@tst999.com', '$2y$13$WTj5xZXFuBLhw5mswhFtVuH9.tznuzE0T3MTDWK7Bf5zRw2RnWpFq', 0, 1, 0, 0, 0, '2021-09-21 14:28:05', NULL, NULL, NULL, '2021-09-21 14:14:58', NULL, 0, NULL, NULL, NULL, 0, '2021-09-21 09:25:51', '2021-09-21 07:30:28', '2022-10-19 19:20:28');
 
 -- --------------------------------------------------------
 
@@ -2189,12 +2202,11 @@ CREATE TABLE `volumes` (
   `fieldLayoutId` int(11) DEFAULT NULL,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `hasUrls` tinyint(1) NOT NULL DEFAULT 1,
-  `url` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fs` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `transformFs` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `transformSubpath` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `titleTranslationMethod` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'site',
   `titleTranslationKeyFormat` text COLLATE utf8_unicode_ci DEFAULT NULL,
-  `settings` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `sortOrder` smallint(6) UNSIGNED DEFAULT NULL,
   `dateCreated` datetime NOT NULL,
   `dateUpdated` datetime NOT NULL,
@@ -2206,8 +2218,8 @@ CREATE TABLE `volumes` (
 -- Gegevens worden geëxporteerd voor tabel `volumes`
 --
 
-INSERT INTO `volumes` (`id`, `fieldLayoutId`, `name`, `handle`, `type`, `hasUrls`, `url`, `titleTranslationMethod`, `titleTranslationKeyFormat`, `settings`, `sortOrder`, `dateCreated`, `dateUpdated`, `dateDeleted`, `uid`) VALUES
-(1, 1, 'images', 'images', 'craft\\volumes\\Local', 1, '//inlog.local/images/', 'site', NULL, '{\"path\":\"/Users/pjotr/Sites/inlog/web/images\"}', 1, '2021-09-17 14:58:25', '2021-09-17 14:58:25', NULL, '7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9');
+INSERT INTO `volumes` (`id`, `fieldLayoutId`, `name`, `handle`, `fs`, `transformFs`, `transformSubpath`, `titleTranslationMethod`, `titleTranslationKeyFormat`, `sortOrder`, `dateCreated`, `dateUpdated`, `dateDeleted`, `uid`) VALUES
+(1, 1, 'images', 'images', 'images', NULL, NULL, 'site', NULL, 1, '2021-09-17 14:58:25', '2021-09-17 14:58:25', NULL, '7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9');
 
 -- --------------------------------------------------------
 
@@ -2243,6 +2255,13 @@ INSERT INTO `widgets` (`id`, `userId`, `type`, `sortOrder`, `colspan`, `settings
 --
 
 --
+-- Indexen voor tabel `addresses`
+--
+ALTER TABLE `addresses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_xvljwqopucsxjefqxjvonbfcketbdkmrjgxc` (`ownerId`);
+
+--
 -- Indexen voor tabel `announcements`
 --
 ALTER TABLE `announcements`
@@ -2256,8 +2275,15 @@ ALTER TABLE `announcements`
 --
 ALTER TABLE `assetindexdata`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_zjmpuetxairqsfgrzyqabticcbxkivqczykh` (`sessionId`,`volumeId`),
-  ADD KEY `idx_cxsxvxhkdhcfphihdafuwxvvnhtgmpwbqeex` (`volumeId`);
+  ADD KEY `idx_zjmpuetxairqsfgrzyqabticcbxkivqczykh` (`volumeId`),
+  ADD KEY `idx_cxsxvxhkdhcfphihdafuwxvvnhtgmpwbqeex` (`volumeId`),
+  ADD KEY `fk_jxykaccfcglysyolvcbfzgssasbfjsidctss` (`sessionId`);
+
+--
+-- Indexen voor tabel `assetindexingsessions`
+--
+ALTER TABLE `assetindexingsessions`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexen voor tabel `assets`
@@ -2268,21 +2294,6 @@ ALTER TABLE `assets`
   ADD KEY `idx_rdprcsqnffugahpoafsweneecvxvfhyezmxl` (`folderId`),
   ADD KEY `idx_vubsjpjkdhxxuwocnejtmkvouihxvhohmrvt` (`volumeId`),
   ADD KEY `fk_jrtqktkzqmrkymczcaqhwbiyrkbfnrxvyntb` (`uploaderId`);
-
---
--- Indexen voor tabel `assettransformindex`
---
-ALTER TABLE `assettransformindex`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_mecclskbyjvqeuwdrgtazooxyefucrzyouac` (`volumeId`,`assetId`,`location`);
-
---
--- Indexen voor tabel `assettransforms`
---
-ALTER TABLE `assettransforms`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_saplqefokradihmxtyhwtemsfsgpiiamuvuu` (`name`),
-  ADD KEY `idx_ygrvkelpothxpbjxitvrphedmgqenoljtcdj` (`handle`);
 
 --
 -- Indexen voor tabel `categories`
@@ -2360,14 +2371,7 @@ ALTER TABLE `drafts`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_tbdehbvaxyynfvnupgbhfxbmdmwyzrrhtryo` (`creatorId`,`provisional`),
   ADD KEY `idx_lvfhgmeoncsajptnfxjuylhtnlnlmrohekmx` (`saved`),
-  ADD KEY `fk_toovrktkkrzsjhbbfxdwwhidjhauxzxrypsc` (`sourceId`);
-
---
--- Indexen voor tabel `elementindexsettings`
---
-ALTER TABLE `elementindexsettings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_rjgzbmolitaqmcikbkcrmizshgewprimakpb` (`type`);
+  ADD KEY `fk_toovrktkkrzsjhbbfxdwwhidjhauxzxrypsc` (`canonicalId`);
 
 --
 -- Indexen voor tabel `elements`
@@ -2382,7 +2386,8 @@ ALTER TABLE `elements`
   ADD KEY `idx_zphdbaqcjtqoiwllqwzrxqjngpmmmjuvjjmd` (`archived`,`dateDeleted`,`draftId`,`revisionId`,`canonicalId`),
   ADD KEY `fk_gvhqxxxbqllitynsatibwhjadaacuemrpzwv` (`canonicalId`),
   ADD KEY `fk_smsldpdgrxgrgtwbhmfuiutufrqvlzwcugnr` (`draftId`),
-  ADD KEY `fk_cyseqktkknzhcljweyqbynqmewgcibeivitx` (`revisionId`);
+  ADD KEY `fk_cyseqktkknzhcljweyqbynqmewgcibeivitx` (`revisionId`),
+  ADD KEY `idx_bqqnwzobpdcpgholxzblzwsdremurwsltzxk` (`archived`,`dateDeleted`,`draftId`,`revisionId`,`canonicalId`,`enabled`);
 
 --
 -- Indexen voor tabel `elements_sites`
@@ -2487,6 +2492,21 @@ ALTER TABLE `gqltokens`
   ADD KEY `fk_nrvbexfkwcuqglqdepsekopxirzmtsttdbra` (`schemaId`);
 
 --
+-- Indexen voor tabel `imagetransformindex`
+--
+ALTER TABLE `imagetransformindex`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_lrpuwsaajmtberuxrxuegptqcpmujbocqruu` (`assetId`,`transformString`);
+
+--
+-- Indexen voor tabel `imagetransforms`
+--
+ALTER TABLE `imagetransforms`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_saplqefokradihmxtyhwtemsfsgpiiamuvuu` (`name`),
+  ADD KEY `idx_ygrvkelpothxpbjxitvrphedmgqenoljtcdj` (`handle`);
+
+--
 -- Indexen voor tabel `info`
 --
 ALTER TABLE `info`
@@ -2497,10 +2517,16 @@ ALTER TABLE `info`
 --
 ALTER TABLE `matrixblocks`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_ckpnztusfeqoekmxhrxurqnwyzfdngrjjkym` (`ownerId`),
+  ADD KEY `idx_ckpnztusfeqoekmxhrxurqnwyzfdngrjjkym` (`primaryOwnerId`),
   ADD KEY `idx_aznhjtjhqxxavtrdrrzvzgsrdwvhhteupkah` (`fieldId`),
-  ADD KEY `idx_bfxxqrdqbuicnlbokfppuqzxwxvfndbdodul` (`typeId`),
-  ADD KEY `idx_xantwbtnbzelwvqgbirajhdozdmvorpfnyqv` (`sortOrder`);
+  ADD KEY `idx_bfxxqrdqbuicnlbokfppuqzxwxvfndbdodul` (`typeId`);
+
+--
+-- Indexen voor tabel `matrixblocks_owners`
+--
+ALTER TABLE `matrixblocks_owners`
+  ADD PRIMARY KEY (`blockId`,`ownerId`),
+  ADD KEY `fk_thvquegfkeaczzwhlumgwjztglxfyhxtuaea` (`ownerId`);
 
 --
 -- Indexen voor tabel `matrixblocktypes`
@@ -2561,7 +2587,7 @@ ALTER TABLE `resourcepaths`
 --
 ALTER TABLE `revisions`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_sxdxnszlmdrmedrvljhjfynwknmodvpmyese` (`sourceId`,`num`),
+  ADD UNIQUE KEY `idx_sxdxnszlmdrmedrvljhjfynwknmodvpmyese` (`canonicalId`,`num`),
   ADD KEY `fk_jovmozeinamjsljbjewokvuvqqbwkliemomv` (`creatorId`);
 
 --
@@ -2686,31 +2712,6 @@ ALTER TABLE `tags`
   ADD KEY `idx_cputgaybwmhloupsouczrnraabdaftjyepjc` (`groupId`);
 
 --
--- Indexen voor tabel `templatecacheelements`
---
-ALTER TABLE `templatecacheelements`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_grxtjyrrpkrvghyyhhrxvjaqfctcoyphxvwu` (`cacheId`),
-  ADD KEY `idx_hzestmvlykpmjmdatgejvyjlyvccigdslhqd` (`elementId`);
-
---
--- Indexen voor tabel `templatecachequeries`
---
-ALTER TABLE `templatecachequeries`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_ptykfkrdbufjbnfgefiawyxlihilgjxjjrli` (`cacheId`),
-  ADD KEY `idx_owrdhmguiumyltrbyionoejogfpihdutresf` (`type`);
-
---
--- Indexen voor tabel `templatecaches`
---
-ALTER TABLE `templatecaches`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_wxazagfwazoydalqparvohsrxxskhrubjbdu` (`cacheKey`,`siteId`,`expiryDate`,`path`),
-  ADD KEY `idx_zrvongvdckmenicnaipnqbmogzstcmkfseuk` (`cacheKey`,`siteId`,`expiryDate`),
-  ADD KEY `idx_xtkalylvbcdftdafrwtisniklusmiivmaahd` (`siteId`);
-
---
 -- Indexen voor tabel `tokens`
 --
 ALTER TABLE `tokens`
@@ -2768,11 +2769,14 @@ ALTER TABLE `userpreferences`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_vdkncqcmeaewiyiuexugthkdpgylvgaomzdf` (`uid`),
   ADD KEY `idx_agkfclbyyecmxkykdocehchbncgaiqmegkbt` (`verificationCode`),
   ADD KEY `idx_muarbvbafwonsohnafqawdhhpzwinzbbmdxl` (`email`),
   ADD KEY `idx_adidqewcnorgfohvjiddxbwghhiwqjuejhbq` (`username`),
-  ADD KEY `fk_ydwebvvwvpwgluzwxsxucoquqwqbmcqskpns` (`photoId`);
+  ADD KEY `fk_ydwebvvwvpwgluzwxsxucoquqwqbmcqskpns` (`photoId`),
+  ADD KEY `idx_kdewejcdfzgdjstpaudrmmwvwqxqoapvbpbz` (`active`),
+  ADD KEY `idx_bycuyfmizybsnscvhdjkdzbgjmgaxjbphoxq` (`locked`),
+  ADD KEY `idx_sijxacfxtxgyxokjreqiogqkpavurrnxoohb` (`pending`),
+  ADD KEY `idx_lwqnbkzjyahggnhncywwfvjbpmpgowthrlkq` (`suspended`);
 
 --
 -- Indexen voor tabel `volumefolders`
@@ -2817,15 +2821,9 @@ ALTER TABLE `assetindexdata`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT voor een tabel `assettransformindex`
+-- AUTO_INCREMENT voor een tabel `assetindexingsessions`
 --
-ALTER TABLE `assettransformindex`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT voor een tabel `assettransforms`
---
-ALTER TABLE `assettransforms`
+ALTER TABLE `assetindexingsessions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -2863,12 +2861,6 @@ ALTER TABLE `deprecationerrors`
 --
 ALTER TABLE `drafts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `elementindexsettings`
---
-ALTER TABLE `elementindexsettings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT voor een tabel `elements`
@@ -2910,7 +2902,7 @@ ALTER TABLE `fieldlayouts`
 -- AUTO_INCREMENT voor een tabel `fieldlayouttabs`
 --
 ALTER TABLE `fieldlayouttabs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT voor een tabel `fields`
@@ -2937,6 +2929,18 @@ ALTER TABLE `gqltokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT voor een tabel `imagetransformindex`
+--
+ALTER TABLE `imagetransformindex`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT voor een tabel `imagetransforms`
+--
+ALTER TABLE `imagetransforms`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT voor een tabel `info`
 --
 ALTER TABLE `info`
@@ -2952,7 +2956,7 @@ ALTER TABLE `matrixblocktypes`
 -- AUTO_INCREMENT voor een tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=200;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=224;
 
 --
 -- AUTO_INCREMENT voor een tabel `plugins`
@@ -3006,7 +3010,7 @@ ALTER TABLE `seo_sitemap`
 -- AUTO_INCREMENT voor een tabel `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT voor een tabel `shunnedmessages`
@@ -3051,24 +3055,6 @@ ALTER TABLE `taggroups`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT voor een tabel `templatecacheelements`
---
-ALTER TABLE `templatecacheelements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `templatecachequeries`
---
-ALTER TABLE `templatecachequeries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `templatecaches`
---
-ALTER TABLE `templatecaches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT voor een tabel `tokens`
 --
 ALTER TABLE `tokens`
@@ -3090,13 +3076,13 @@ ALTER TABLE `usergroups_users`
 -- AUTO_INCREMENT voor een tabel `userpermissions`
 --
 ALTER TABLE `userpermissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT voor een tabel `userpermissions_usergroups`
 --
 ALTER TABLE `userpermissions_usergroups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT voor een tabel `userpermissions_users`
@@ -3133,6 +3119,13 @@ ALTER TABLE `widgets`
 --
 
 --
+-- Beperkingen voor tabel `addresses`
+--
+ALTER TABLE `addresses`
+  ADD CONSTRAINT `fk_xvljwqopucsxjefqxjvonbfcketbdkmrjgxc` FOREIGN KEY (`ownerId`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ynxayrwlhutadsykhbfhofbxpqnjproplhcu` FOREIGN KEY (`id`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
+
+--
 -- Beperkingen voor tabel `announcements`
 --
 ALTER TABLE `announcements`
@@ -3143,7 +3136,8 @@ ALTER TABLE `announcements`
 -- Beperkingen voor tabel `assetindexdata`
 --
 ALTER TABLE `assetindexdata`
-  ADD CONSTRAINT `fk_hkbfpkvzwornrwinjrinmgeswntqwbukpexb` FOREIGN KEY (`volumeId`) REFERENCES `volumes` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_hkbfpkvzwornrwinjrinmgeswntqwbukpexb` FOREIGN KEY (`volumeId`) REFERENCES `volumes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_jxykaccfcglysyolvcbfzgssasbfjsidctss` FOREIGN KEY (`sessionId`) REFERENCES `assetindexingsessions` (`id`) ON DELETE CASCADE;
 
 --
 -- Beperkingen voor tabel `assets`
@@ -3211,7 +3205,7 @@ ALTER TABLE `craftidtokens`
 --
 ALTER TABLE `drafts`
   ADD CONSTRAINT `fk_nibafjyakiubngpinyxuhnyeknlccymesqky` FOREIGN KEY (`creatorId`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_toovrktkkrzsjhbbfxdwwhidjhauxzxrypsc` FOREIGN KEY (`sourceId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_toovrktkkrzsjhbbfxdwwhidjhauxzxrypsc` FOREIGN KEY (`canonicalId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
 
 --
 -- Beperkingen voor tabel `elements`
@@ -3283,10 +3277,17 @@ ALTER TABLE `gqltokens`
 -- Beperkingen voor tabel `matrixblocks`
 --
 ALTER TABLE `matrixblocks`
-  ADD CONSTRAINT `fk_bvwtttaafvectsdjfgzbnvhlwsogpjycrbnc` FOREIGN KEY (`ownerId`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_bvwtttaafvectsdjfgzbnvhlwsogpjycrbnc` FOREIGN KEY (`primaryOwnerId`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_euksmvadzcqjnwctlseuoylefgszssntmyaw` FOREIGN KEY (`id`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_vitdzwxjxiiiufmlvdblfzicdmiyiuvssfio` FOREIGN KEY (`typeId`) REFERENCES `matrixblocktypes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_yulsmsimzirducfpufrxntgnnpvrktfahmhv` FOREIGN KEY (`fieldId`) REFERENCES `fields` (`id`) ON DELETE CASCADE;
+
+--
+-- Beperkingen voor tabel `matrixblocks_owners`
+--
+ALTER TABLE `matrixblocks_owners`
+  ADD CONSTRAINT `fk_metkycenzfomuinwuqxgpvkiutbfobcqdlny` FOREIGN KEY (`blockId`) REFERENCES `matrixblocks` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_thvquegfkeaczzwhlumgwjztglxfyhxtuaea` FOREIGN KEY (`ownerId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
 
 --
 -- Beperkingen voor tabel `matrixblocktypes`
@@ -3309,7 +3310,7 @@ ALTER TABLE `relations`
 --
 ALTER TABLE `revisions`
   ADD CONSTRAINT `fk_jovmozeinamjsljbjewokvuvqqbwkliemomv` FOREIGN KEY (`creatorId`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_qnrnmcksymfknmesippaoabzymrepdpgspvy` FOREIGN KEY (`sourceId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_qnrnmcksymfknmesippaoabzymrepdpgspvy` FOREIGN KEY (`canonicalId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
 
 --
 -- Beperkingen voor tabel `sections`
@@ -3361,25 +3362,6 @@ ALTER TABLE `taggroups`
 ALTER TABLE `tags`
   ADD CONSTRAINT `fk_hdgzumsxvkfijietqeobbakyejtmmypzvxbn` FOREIGN KEY (`groupId`) REFERENCES `taggroups` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_nbrlhxeswuskkcrnwcrjwlvepuqgirkbxhad` FOREIGN KEY (`id`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
-
---
--- Beperkingen voor tabel `templatecacheelements`
---
-ALTER TABLE `templatecacheelements`
-  ADD CONSTRAINT `fk_itgbjwrkpjzlgiswsifkgbtewnvvobtnjmdo` FOREIGN KEY (`cacheId`) REFERENCES `templatecaches` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_iwooiqhtumonrakjixfkexdczdizhjebpbme` FOREIGN KEY (`elementId`) REFERENCES `elements` (`id`) ON DELETE CASCADE;
-
---
--- Beperkingen voor tabel `templatecachequeries`
---
-ALTER TABLE `templatecachequeries`
-  ADD CONSTRAINT `fk_vnmlmwykrutfqkeekdyvwqlktnxsfpmqzbbh` FOREIGN KEY (`cacheId`) REFERENCES `templatecaches` (`id`) ON DELETE CASCADE;
-
---
--- Beperkingen voor tabel `templatecaches`
---
-ALTER TABLE `templatecaches`
-  ADD CONSTRAINT `fk_rwliethyaugpziolnvehxmzdgnlzslcvqvsx` FOREIGN KEY (`siteId`) REFERENCES `sites` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Beperkingen voor tabel `usergroups_users`
