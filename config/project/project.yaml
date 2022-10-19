@@ -1,8 +1,16 @@
-dateModified: 1632390375
+dateModified: 1666207229
 email:
   fromEmail: pjotr@pixeldeluxe.nl
   fromName: Inlog
   transportType: craft\mail\transportadapters\Sendmail
+fs:
+  images:
+    hasUrls: true
+    name: images
+    settings:
+      path: /Users/pjotr/Sites/inlog/web/images
+    type: craft\fs\Local
+    url: //inlog.local/images/
 meta:
   __names__:
     7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9: images # images
@@ -52,5 +60,5 @@ system:
   live: true
   name: Inlog
   retryDuration: null
-  schemaVersion: 3.7.8
+  schemaVersion: 4.0.0.9
   timeZone: Europe/Amsterdam
