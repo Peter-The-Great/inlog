@@ -1,7 +1,7 @@
 allowPublicRegistration: true
+deactivateByDefault: false
 defaultGroup: d3315dc2-f048-4bbf-be48-94be8ea6f29d # indelingen
 photoSubpath: profile
 photoVolumeUid: 7dea6ad5-11b2-4d55-b238-8ffe0aa1afe9 # images
 requireEmailVerification: true
-suspendByDefault: false
 validateOnPublicRegistration: false
