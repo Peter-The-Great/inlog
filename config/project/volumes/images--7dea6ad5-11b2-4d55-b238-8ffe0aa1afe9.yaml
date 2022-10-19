@@ -23,18 +23,16 @@ fieldLayouts:
             step: null
             tip: null
             title: null
-            type: craft\fieldlayoutelements\AssetTitleField
+            type: craft\fieldlayoutelements\assets\AssetTitleField
             warning: null
             width: 100
         name: Inhoud
         sortOrder: 1
+fs: images
 handle: images
 hasUrls: true
 name: images
-settings:
-  path: /Users/pjotr/Sites/inlog/web/images
 sortOrder: 1
 titleTranslationKeyFormat: null
 titleTranslationMethod: null
-type: craft\volumes\Local
 url: //inlog.local/images/
